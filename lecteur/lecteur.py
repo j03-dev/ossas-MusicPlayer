@@ -1,33 +1,44 @@
-from pydub import AudioSegment
 from os import path, system, walk
+from mutagen.mp3 import MP3
 import pygame
 import time
 
 pygame.mixer.init()
 
-status = "Play"
+PLAY: bool = True
 
-def play(song_path):
-	pygame.mixer.music.load(song_path)
-	pygame.mixer.music.play()
+def play(song_path: str) -> float:
+    pygame.mixer.music.load(song_path)
+    pygame.mixer.music.play()
+    audio = MP3(song_path)
+    return audio.info.length
 
-def getPlayTime():
-	return time.strftime("%M:%S", time.gmtime(pygame.mixer.music.get_pos() / 1000))
+def scrool(song_path: str, postion: float) -> None:
+	play(song_path)
+	postion *= 1000
+	print("postion",postion)
+	pygame.mixer.music.set_pos(postion)
 
-def pause():
-	global status
-	if status == "Play":
-		status = "Pause"
+def getPosition() -> tuple[float, str]:
+	postion: float = pygame.mixer.music.get_pos() / 1000
+	postion_as_time_format: str = time.strftime("%M:%S", time.gmtime(postion))
+	return postion, postion_as_time_format
+
+def pause() -> bool:
+	global PLAY
+	if PLAY:
+		PLAY = False
 		pygame.mixer.music.pause()
 	else:
-		status = "Play"
+		PLAY = True
 		pygame.mixer.music.unpause()
-		
+	return PLAY
 
-def findMp3File(search_path="/home/j03-dev/Music"):
-	file_dict = {}
+
+def findMp3File(search_path: str="/mnt/D/Music") -> dict:
+	file_dict: dict = {}
 	for root, dir, files in walk(search_path):
-		for file in files:
-			if ".mp3" in file:
-				file_dict[file[:-4]] = path.join(root, file)
+		for title in files:
+			if ".mp3" in title:
+				file_dict[title[:-4]] = path.join(root, title)
 	return file_dict
