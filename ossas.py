@@ -5,12 +5,15 @@ from tkinter import (
     Scrollbar,
     Button
 )
+import PIL
 import customtkinter
 from lecteur import lecteur
 import os
 
-customtkinter.set_appearance_mode("Light")  # Modes: "System" (standard), "Dark", "Light"
+# Modes: "System" (standard), "Dark", "Light"
+customtkinter.set_appearance_mode("Light")
 customtkinter.set_default_color_theme("dark-blue")
+
 
 class MusicPlayer(customtkinter.CTk):
     def __init__(self) -> None:
@@ -22,7 +25,8 @@ class MusicPlayer(customtkinter.CTk):
         self.__pause_image = PhotoImage(file="assets/pause.png")
         self.__text_image = PhotoImage(file="assets/next.png")
         self.__prev_image = PhotoImage(file="assets/previous.png")
-        self.__album_image = PhotoImage(file="assets/music.png")
+        self.__album_image = customtkinter.CTkImage(
+            PIL.Image.open("assets/music.png"), size=((150, 150)))
 
         self.__play_status: bool = True
         self.__theme: str = "white"
@@ -63,42 +67,44 @@ class MusicPlayer(customtkinter.CTk):
         for music_title in self.__all_mp3_title:
             self.__music_listbox.insert('end', music_title)
 
-        self.__left_frame.pack(pady= 20, side="left",fill="y", padx=5)
+        self.__left_frame.pack(pady=20, side="left", fill="y", padx=5)
 
         self.__right_frame = customtkinter.CTkFrame(self.__container)
         self.__titre_text = StringVar()
-        self.__titre = customtkinter.CTkLabel(self.__right_frame, textvariable=self.__titre_text).pack(pady=50)
-        self.__image_music = customtkinter.CTkLabel(self.__right_frame, image=self.__album_image, width=500).pack()
+        self.__titre = customtkinter.CTkLabel(
+            self.__right_frame, textvariable=self.__titre_text).pack(pady=50)
+        self.__image_music = customtkinter.CTkLabel(
+            self.__right_frame, text="", image=self.__album_image).pack()
 
         self.__right_frame_bottom = customtkinter.CTkFrame(self.__right_frame)
         self.__prev_button = Button(
-                self.__right_frame_bottom,
-                text=None ,
-                relief='groove',
-                borderwidth=0,
-                command=self.prev,
-                image=self.__prev_image
+            self.__right_frame_bottom,
+            text=None,
+            relief='groove',
+            borderwidth=0,
+            command=self.prev,
+            image=self.__prev_image
         )\
-        .pack(side='left')
+            .pack(side='left')
         self.__play_button = Button(
-                self.__right_frame_bottom,
-                text=None,
-                relief='groove',
-                borderwidth=0,
-                command=self.play,
-                image=self.__play_image
+            self.__right_frame_bottom,
+            text=None,
+            relief='groove',
+            borderwidth=0,
+            command=self.play,
+            image=self.__play_image
         )
         self.__play_button.pack(padx=10, side='left')
         self.__next_button = Button(
-                self.__right_frame_bottom,
-                text=None,
-                relief='groove',
-                borderwidth=0,
-                command=self.next,
-                image=self.__text_image
+            self.__right_frame_bottom,
+            text=None,
+            relief='groove',
+            borderwidth=0,
+            command=self.next,
+            image=self.__text_image
         )\
-        .pack(side='left')
-        self.__right_frame_bottom.pack(pady=20 ,side='bottom')
+            .pack(side='left')
+        self.__right_frame_bottom.pack(pady=20, side='bottom')
 
         self.__status = customtkinter.CTkFrame(self.__right_frame)
         self.scale = customtkinter.CTkSlider(self.__status, from_=0, to=1)
@@ -109,7 +115,8 @@ class MusicPlayer(customtkinter.CTk):
 
         self.__container.pack(fill='y', anchor="sw")
 
-        self.__music_listbox.bind('<Double-Button-1>', self.selectItemInListbox)
+        self.__music_listbox.bind(
+            '<Double-Button-1>', self.selectItemInListbox)
         self.__search_Entry.bind('<KeyRelease>', self.search)
 
     def setTitle(self) -> None:
@@ -125,11 +132,12 @@ class MusicPlayer(customtkinter.CTk):
             if time_left == "59:59":
                 self.next()
         else:
-            sond = self.__pathMp3Dict[self.__music_listbox.get(self.__activate_now)]
+            sond = self.__pathMp3Dict[self.__music_listbox.get(
+                self.__activate_now)]
             lecteur.scrool(sond, self.scale.get())
             self.after(1000, self.playTime)
 
-    def play(self, index: int|str ='active') -> None:
+    def play(self, index: int | str = 'active') -> None:
         try:
             sond = self.__pathMp3Dict[self.__music_listbox.get(index)]
         except:
@@ -137,13 +145,14 @@ class MusicPlayer(customtkinter.CTk):
             sond = self.__pathMp3Dict[self.__music_listbox.get(index)]
         self.__duration: float = lecteur.play(sond)
         self.scale.set(0)
-        self.scale.to: float = self.__duration
+        self.scale._to: float = self.__duration
         self.__play_button.config(image=self.__pause_image, command=self.pause)
         self.__music_listbox.selection_clear(0, 'end')
         self.__music_listbox.activate(index)
         self.__music_listbox.selection_set(index, last=None)
         self.__activate_now: int = self.__music_listbox.curselection()[0]
-        self.__music_listbox.yview("moveto", (self.__activate_now - self.__scrolloff) / len(self.__music_listbox.get(0, 'end'))) # update yview 
+        self.__music_listbox.yview("moveto", (self.__activate_now - self.__scrolloff) / len(
+            self.__music_listbox.get(0, 'end')))  # update yview
         self.playTime()
         self.setTitle()
 
@@ -172,7 +181,8 @@ class MusicPlayer(customtkinter.CTk):
 
     def search(self, e: str) -> None:
         search_output = self.__search_Entry.get()
-        data = [title for title in self.__all_mp3_title if search_output.lower() in title.lower()]
+        data = [title for title in self.__all_mp3_title if search_output.lower()
+                in title.lower()]
         self.updateMusicListbox(data)
 
 
