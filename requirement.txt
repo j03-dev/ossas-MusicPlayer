@@ -1,3 +1,4 @@
 mutagen
-customtkinter
 pygame
+pillow
+customtkinter
