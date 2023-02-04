@@ -1,14 +1,7 @@
-from tkinter import (
-    PhotoImage,
-    Listbox,
-    StringVar,
-    Scrollbar,
-    Button
-)
+from tkinter import PhotoImage, Listbox, StringVar, Scrollbar, Button
 import PIL
 import customtkinter
 from lecteur import lecteur
-import os
 
 # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_appearance_mode("Light")
@@ -26,13 +19,15 @@ class MusicPlayer(customtkinter.CTk):
         self.__text_image = PhotoImage(file="assets/next.png")
         self.__prev_image = PhotoImage(file="assets/previous.png")
         self.__album_image = customtkinter.CTkImage(
-            PIL.Image.open("assets/music.png"), size=((150, 150)))
+            PIL.Image.open("assets/music.png"), size=((150, 150))
+        )
 
-        self.__play_status: bool = True
+        self.__play_status: bool = False
         self.__theme: str = "white"
-        self.__duration: int = 0
         self.__activate_now: int = 0
         self.__scrolloff: int = 8
+
+        self.__position = 0
 
         self.__pathMp3Dict: dict = lecteur.findMp3File()
         self.__all_mp3_title: list[str] = [key for key in self.__pathMp3Dict]
@@ -43,117 +38,121 @@ class MusicPlayer(customtkinter.CTk):
 
         self.__search_Frame = customtkinter.CTkFrame(self.__left_frame)
         self.__search_Entry = customtkinter.CTkEntry(
-            self.__search_Frame,
-            placeholder_text="search"
+            self.__search_Frame, placeholder_text="search"
         )
-        self.__search_Entry.pack(fill='x', side='left', expand=1)
-        self.__search_Frame.pack(fill='x')
+        self.__search_Entry.pack(fill="x", side="left", expand=1)
+        self.__search_Frame.pack(fill="x", pady=5)
         self.__scrollbar = Scrollbar(self.__left_frame)
-        self.__scrollbar.pack(side='left', fill='y')
+        self.__scrollbar.pack(side="left", fill="y")
         self.__music_listbox = Listbox(
             self.__left_frame,
-            bg='white',
-            fg='gray',
+            bg="white",
+            fg="gray",
             height=80,
             width=60,
-            selectbackground='black',
-            selectforeground='white',
-            yscrollcommand=self.__scrollbar.set
+            selectbackground="black",
+            selectforeground="white",
+            yscrollcommand=self.__scrollbar.set,
         )
-        self.__music_listbox.pack(fill='x')
+        self.__music_listbox.pack(fill="x")
         self.__scrollbar.config(command=self.__music_listbox.yview)
 
         # insert all title on listbox
         for music_title in self.__all_mp3_title:
-            self.__music_listbox.insert('end', music_title)
+            self.__music_listbox.insert("end", music_title)
 
         self.__left_frame.pack(pady=20, side="left", fill="y", padx=5)
 
         self.__right_frame = customtkinter.CTkFrame(self.__container)
         self.__titre_text = StringVar()
         self.__titre = customtkinter.CTkLabel(
-            self.__right_frame, textvariable=self.__titre_text).pack(pady=50)
+            self.__right_frame, textvariable=self.__titre_text
+        ).pack(pady=50)
         self.__image_music = customtkinter.CTkLabel(
-            self.__right_frame, text="", image=self.__album_image).pack()
+            self.__right_frame, text="", image=self.__album_image
+        ).pack()
 
         self.__right_frame_bottom = customtkinter.CTkFrame(self.__right_frame)
         self.__prev_button = Button(
             self.__right_frame_bottom,
             text=None,
-            relief='groove',
+            relief="groove",
             borderwidth=0,
             command=self.prev,
-            image=self.__prev_image
-        )\
-            .pack(side='left')
+            image=self.__prev_image,
+        ).pack(side="left")
         self.__play_button = Button(
             self.__right_frame_bottom,
             text=None,
-            relief='groove',
+            relief="groove",
             borderwidth=0,
             command=self.play,
-            image=self.__play_image
+            image=self.__play_image,
         )
-        self.__play_button.pack(padx=10, side='left')
+        self.__play_button.pack(padx=10, side="left")
         self.__next_button = Button(
             self.__right_frame_bottom,
             text=None,
-            relief='groove',
+            relief="groove",
             borderwidth=0,
             command=self.next,
-            image=self.__text_image
-        )\
-            .pack(side='left')
-        self.__right_frame_bottom.pack(pady=20, side='bottom')
+            image=self.__text_image,
+        ).pack(side="left")
+        self.__right_frame_bottom.pack(pady=20, side="bottom")
 
         self.__status = customtkinter.CTkFrame(self.__right_frame)
-        self.scale = customtkinter.CTkSlider(self.__status, from_=0, to=1)
-        self.scale.pack(side='left', fill='x', ipadx=150)
-        self.__status.pack(fill='x', side='bottom', ipady=2, padx=4)
+        self.scale = customtkinter.CTkSlider(
+            self.__status, command=lambda x: (self.changePositon(x))
+        )
+        self.scale.pack(side="left", fill="x", ipadx=150)
+        self.__status.pack(fill="x", side="bottom", ipady=2, padx=4)
 
         self.__right_frame.pack(side="right", fill="y", expand=1, padx=5)
 
-        self.__container.pack(fill='y', anchor="sw")
+        self.__container.pack(fill="y", anchor="sw")
 
-        self.__music_listbox.bind(
-            '<Double-Button-1>', self.selectItemInListbox)
-        self.__search_Entry.bind('<KeyRelease>', self.search)
+        self.__music_listbox.bind("<Double-Button-1>", self.selectItemInListbox)
+        self.__search_Entry.bind("<KeyRelease>", self.search)
+
+        self.playTime()
+
+    def music_now(self) -> str:
+        return self.__pathMp3Dict[self.__music_listbox.get("active")]
 
     def setTitle(self) -> None:
-        self.__titre_text.set(self.__music_listbox.get('active'))
+        self.__titre_text.set(self.__music_listbox.get("active"))
+
+    def changePositon(self, position: float):
+        lecteur.scrool(position)
+        self.__position = position
 
     def playTime(self) -> None:
-        postion, time_left = lecteur.getPosition()
-        tmp = self.scale.get()
-        self.scale.set(postion)
-        diff = abs(tmp - postion)
-        if diff <= 3:
-            self.after(1000, self.playTime)
+        # update scale postion
+        if self.__play_status:
+            self.__position += 1
+            _, time_left = lecteur.getPosition()
+            self.scale.set(self.__position)
             if time_left == "59:59":
                 self.next()
-        else:
-            sond = self.__pathMp3Dict[self.__music_listbox.get(
-                self.__activate_now)]
-            lecteur.scrool(sond, self.scale.get())
-            self.after(1000, self.playTime)
+        self.after(1000, self.playTime)
 
-    def play(self, index: int | str = 'active') -> None:
-        try:
-            sond = self.__pathMp3Dict[self.__music_listbox.get(index)]
-        except:
+    def play(self, index: int | str = "active") -> None:
+        self.__play_status = True
+        total_len_music = len(self.__music_listbox.get(0, "end"))
+        if index == total_len_music:
             index = 0
-            sond = self.__pathMp3Dict[self.__music_listbox.get(index)]
-        self.__duration: float = lecteur.play(sond)
+        sond = self.music_now()
+        self.scale._to: float = lecteur.play(sond)
         self.scale.set(0)
-        self.scale._to: float = self.__duration
+        self.__position = 0
         self.__play_button.config(image=self.__pause_image, command=self.pause)
-        self.__music_listbox.selection_clear(0, 'end')
+        self.__music_listbox.selection_clear(0, "end")
         self.__music_listbox.activate(index)
         self.__music_listbox.selection_set(index, last=None)
         self.__activate_now: int = self.__music_listbox.curselection()[0]
-        self.__music_listbox.yview("moveto", (self.__activate_now - self.__scrolloff) / len(
-            self.__music_listbox.get(0, 'end')))  # update yview
-        self.playTime()
+        self.__music_listbox.yview(
+            "moveto", (self.__activate_now - self.__scrolloff) / total_len_music,
+        )  # update yview
         self.setTitle()
 
     def pause(self) -> None:
@@ -175,14 +174,17 @@ class MusicPlayer(customtkinter.CTk):
         self.play()
 
     def updateMusicListbox(self, data: str) -> None:
-        self.__music_listbox.delete(0, 'end')
+        self.__music_listbox.delete(0, "end")
         for result in data:
-            self.__music_listbox.insert('end', result)
+            self.__music_listbox.insert("end", result)
 
     def search(self, e: str) -> None:
         search_output = self.__search_Entry.get()
-        data = [title for title in self.__all_mp3_title if search_output.lower()
-                in title.lower()]
+        data = [
+            title
+            for title in self.__all_mp3_title
+            if search_output.lower() in title.lower()
+        ]
         self.updateMusicListbox(data)
 
 

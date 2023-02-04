@@ -1,4 +1,4 @@
-from os import path, system, walk
+from os import path, walk
 from mutagen.mp3 import MP3
 import pygame
 import time
@@ -15,10 +15,7 @@ def play(song_path: str) -> float:
     return audio.info.length
 
 
-def scrool(song_path: str, postion: float) -> None:
-    play(song_path)
-    postion *= 1000
-    print("postion", postion)
+def scrool(postion: float) -> None:
     pygame.mixer.music.set_pos(postion)
 
 
