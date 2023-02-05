@@ -19,7 +19,7 @@ class MusicPlayer(customtkinter.CTk):
         self.__text_image = PhotoImage(file="assets/next.png")
         self.__prev_image = PhotoImage(file="assets/previous.png")
         self.__album_image = customtkinter.CTkImage(
-            PIL.Image.open("assets/music.png"), size=((150, 150))
+            PIL.Image.open("assets/music.png"), size=(150, 150)
         )
 
         self.__play_status: bool = False
