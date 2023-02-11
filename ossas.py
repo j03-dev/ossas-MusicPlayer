@@ -70,7 +70,8 @@ class MusicPlayer(customtkinter.CTk):
         ).pack(pady=50)
         self.__image_music = customtkinter.CTkLabel(
             self.__right_frame, text="", image=self.__album_image
-        ).pack()
+        )
+        self.__image_music.pack()
 
         self.__right_frame_bottom = customtkinter.CTkFrame(self.__right_frame)
         self.__prev_button = Button(
@@ -116,11 +117,19 @@ class MusicPlayer(customtkinter.CTk):
 
         self.playTime()
 
-    def music_now(self) -> str:
-        return self.__pathMp3Dict[self.__music_listbox.get("active")]
+    def music_now(self, index) -> str:
+        key = self.__music_listbox.get(index)
+        return self.__pathMp3Dict[key]
 
-    def setTitle(self) -> None:
-        self.__titre_text.set(self.__music_listbox.get("active"))
+    def upateTitleAndImage(self, index) -> None:
+        titre, _, artist, image = lecteur.get_tags(self.music_now(index))
+
+        with open(".tmp.jpg", "wb") as file:
+            file.write(image)
+
+        image = customtkinter.CTkImage(PIL.Image.open(".tmp.jpg"), size=(250, 230))
+        self.__image_music.configure(image=image)
+        self.__titre_text.set(f"{titre} {artist}")
 
     def changePositon(self, position: float):
         lecteur.scrool(position)
@@ -141,8 +150,8 @@ class MusicPlayer(customtkinter.CTk):
         total_len_music = len(self.__music_listbox.get(0, "end"))
         if index == total_len_music:
             index = 0
-        sond = self.music_now()
-        self.scale._to: float = lecteur.play(sond)
+        sond = self.music_now(index)
+        self.scale._to = lecteur.play(sond)
         self.scale.set(0)
         self.__position = 0
         self.__play_button.config(image=self.__pause_image, command=self.pause)
@@ -153,7 +162,7 @@ class MusicPlayer(customtkinter.CTk):
         self.__music_listbox.yview(
             "moveto", (self.__activate_now - self.__scrolloff) / total_len_music,
         )  # update yview
-        self.setTitle()
+        self.upateTitleAndImage(self.__activate_now)
 
     def pause(self) -> None:
         if self.__play_status:
