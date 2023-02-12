@@ -36,12 +36,12 @@ class MusicPlayer(customtkinter.CTk):
 
         self.__left_frame = customtkinter.CTkFrame(self.__container)
 
-        self.__search_Frame = customtkinter.CTkFrame(self.__left_frame)
-        self.__search_Entry = customtkinter.CTkEntry(
-            self.__search_Frame, placeholder_text="search"
+        self.__search_frame = customtkinter.CTkFrame(self.__left_frame)
+        self.__search_entry = customtkinter.CTkEntry(
+            self.__search_frame, placeholder_text="search"
         )
-        self.__search_Entry.pack(fill="x", side="left", expand=1)
-        self.__search_Frame.pack(fill="x", pady=5)
+        self.__search_entry.pack(fill="x", side="left", expand=1)
+        self.__search_frame.pack(fill="x", pady=5)
         self.__scrollbar = Scrollbar(self.__left_frame)
         self.__scrollbar.pack(side="left", fill="y")
         self.__music_listbox = Listbox(
@@ -113,7 +113,7 @@ class MusicPlayer(customtkinter.CTk):
         self.__container.pack(fill="y", anchor="sw")
 
         self.__music_listbox.bind("<Double-Button-1>", self.selectItemInListbox)
-        self.__search_Entry.bind("<KeyRelease>", self.search)
+        self.__search_entry.bind("<KeyRelease>", self.search)
 
         self.playTime()
 
@@ -188,7 +188,7 @@ class MusicPlayer(customtkinter.CTk):
             self.__music_listbox.insert("end", result)
 
     def search(self, e: str) -> None:
-        search_output = self.__search_Entry.get()
+        search_output = self.__search_entry.get()
         data = [
             title
             for title in self.__all_mp3_title
