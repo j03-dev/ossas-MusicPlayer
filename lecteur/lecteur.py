@@ -11,12 +11,19 @@ PLAY: bool = True
 
 def get_tags(song_path: str) -> tuple:
     audio_file = eyed3.load(song_path)
-    titre = audio_file.tag.title
-    album_name = audio_file.tag.album
-    artist_name = audio_file.tag.artist
-    album_image = audio_file.tag.images
-    for image in album_image:
-        img = image.image_data
+    img = None
+    if audio_file is not None:
+        titre = audio_file.tag.title or "unknow"
+        album_name = audio_file.tag.album or "unknow"
+        artist_name = audio_file.tag.artist or "unknow"
+        album_image = audio_file.tag.images
+        for image in album_image:
+            img = image.image_data
+    else:
+        titre = song_path.split("/")[-1].split(".")[0]
+        album_name = "unknow"
+        artist_name = "unknow"
+
     return (titre, album_name, artist_name, img)
 
 
@@ -53,10 +60,7 @@ def findMp3File(search_path: str = "/mnt/d/Music") -> dict:
     for root, dir, files in walk(search_path):
         for file in files:
             if ".mp3" in file:
-                try:
-                    audio_file = path.join(root, file)
-                    titre, album, artist, _ = get_tags(audio_file)
-                    file_dict[f"{titre}, {album}, {artist}"] = audio_file
-                except:
-                    continue
+                audio_file = path.join(root, file)
+                titre, album, artist, _ = get_tags(audio_file)
+                file_dict[f"{titre}, {album}, {artist}"] = audio_file
     return file_dict
