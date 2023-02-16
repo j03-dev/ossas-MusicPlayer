@@ -124,10 +124,13 @@ class MusicPlayer(customtkinter.CTk):
     def upateTitleAndImage(self, index) -> None:
         titre, _, artist, image = lecteur.get_tags(self.music_now(index))
 
-        with open(".tmp.jpg", "wb") as file:
-            file.write(image)
+        if image is not None:
+            with open(".tmp.jpg", "wb") as file:
+                file.write(image)
+            image = customtkinter.CTkImage(PIL.Image.open(".tmp.jpg"), size=(250, 230))
+        else:
+            image = self.__album_image 
 
-        image = customtkinter.CTkImage(PIL.Image.open(".tmp.jpg"), size=(250, 230))
         self.__image_music.configure(image=image)
         self.__titre_text.set(f"{titre} {artist}")
 
