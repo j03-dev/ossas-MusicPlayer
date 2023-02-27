@@ -67,7 +67,7 @@ def pause() -> bool:
 
 def find_audio_file(search_path: str) -> dict:
     file_dict: dict = {}
-    for root, dir, files in walk(search_path):
+    for root, _, files in walk(search_path):
         for file in files:
             if ".mp3" in file:
                 audio_file = path.join(root, file)

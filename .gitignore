@@ -1,3 +1,4 @@
 .tmp.jpg
+.idea
 .env
 **/__pycache__/**
