@@ -1,5 +1,0 @@
-mutagen
-pygame
-pillow
-customtkinter
-eyed3

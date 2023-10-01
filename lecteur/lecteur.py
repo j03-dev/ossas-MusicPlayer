@@ -22,14 +22,14 @@ def read_config(conf: str = "../.config") -> dict:
 def get_tags(song_path: str) -> tuple:
     audio_file = eyed3.load(song_path)
     img = None
-    if audio_file is not None:
+    try:
         titre = audio_file.tag.title or "unknown"
         album_name = audio_file.tag.album or "unknown"
         artist_name = audio_file.tag.artist or "unknown"
         album_image = audio_file.tag.images
         for image in album_image:
             img = image.image_data
-    else:
+    except Exception as _:
         titre = song_path.split("/")[-1].split(".")[0]
         album_name = "unknown"
         artist_name = "unknown"
@@ -50,7 +50,8 @@ def set_position(position: float) -> None:
 
 def get_position() -> tuple[float, str]:
     position: float = pygame.mixer.music.get_pos() / 1000
-    position_as_time_format: str = time.strftime("%M:%S", time.gmtime(position))
+    position_as_time_format: str = time.strftime(
+        "%M:%S", time.gmtime(position))
     return position, position_as_time_format
 
 

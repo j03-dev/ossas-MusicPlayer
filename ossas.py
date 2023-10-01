@@ -1,7 +1,7 @@
 from tkinter import PhotoImage, Listbox, StringVar, Button as Btn
 
-import PIL
 import customtkinter
+from PIL import Image, ImageTk
 
 from lecteur import lecteur
 
@@ -22,8 +22,9 @@ class MusicPlayer(customtkinter.CTk):
         self.__pause_image = PhotoImage(file="assets/pause.png")
         self.__text_image = PhotoImage(file="assets/next.png")
         self.__prev_image = PhotoImage(file="assets/previous.png")
+
         self.__album_image = customtkinter.CTkImage(
-            PIL.Image.open("assets/music.png"), size=(150, 150)
+            Image.open("assets/music.png"), size=(150, 150)
         )
 
         self.__play_status: bool = False
@@ -79,10 +80,8 @@ class MusicPlayer(customtkinter.CTk):
 
         self.__right_frame_bottom = customtkinter.CTkFrame(self.__right_frame)
 
-        # self.__slide_speed = customtkinter.CTkSlider(self.__right_frame_bottom, width=50)
-        # self.__slide_speed.pack(padx=50 ,side="left")
-
-        self.__frame_center_button = customtkinter.CTkFrame(self.__right_frame_bottom)
+        self.__frame_center_button = customtkinter.CTkFrame(
+            self.__right_frame_bottom)
         Btn(
             self.__frame_center_button,
             text=None,
@@ -125,7 +124,8 @@ class MusicPlayer(customtkinter.CTk):
 
         self.__container.pack(fill="y", anchor="sw")
 
-        self.__music_listbox.bind("<Double-Button-1>", lambda x: self.select_item_in_listbox(x))
+        self.__music_listbox.bind(
+            "<Double-Button-1>", lambda x: self.select_item_in_listbox(x))
         self.__search_entry.bind("<KeyRelease>", self.search)
 
         self.play_time()
@@ -140,7 +140,8 @@ class MusicPlayer(customtkinter.CTk):
         if image is not None:
             with open(".tmp.jpg", "wb") as file:
                 file.write(image)
-            image = customtkinter.CTkImage(PIL.Image.open(".tmp.jpg"), size=(250, 230))
+            image = customtkinter.CTkImage(
+                Image.open(".tmp.jpg"), size=(250, 230))
         else:
             image = self.__album_image
 
@@ -176,7 +177,8 @@ class MusicPlayer(customtkinter.CTk):
         self.__music_listbox.selection_set(index, last=None)
         self.__activate_now: int = self.__music_listbox.curselection()[0]
         self.__music_listbox.yview(
-            "moveto", (self.__activate_now - self.__scrolloff) / total_len_music,
+            "moveto", (self.__activate_now - self.__scrolloff) /
+            total_len_music,
         )  # update yview
         self.update_title_and_image(self.__activate_now)
 

@@ -1,0 +1,11 @@
+coverage==5.5
+customtkinter==5.2.0
+darkdetect==0.8.0
+deprecation==2.1.0
+eyed3==0.9.7
+filetype==1.2.0
+mutagen==1.47.0
+packaging==23.1
+Pillow==10.0.1
+pygame==2.5.2
+toml==0.10.2
