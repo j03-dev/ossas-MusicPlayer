@@ -7,7 +7,7 @@
 ```bash
 git clone github.com/j03-dev/ossas-MusicPlayer
 cd ossas-MusicPlayer
-python3 -m pip install -r requirement.txt
+python3 -m pip install -r requirements.txt
 ```
 
 ## config
