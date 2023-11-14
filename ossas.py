@@ -42,9 +42,7 @@ class MusicPlayer(customtkinter.CTk):
         self.__left_frame = customtkinter.CTkFrame(self.__container)
 
         self.__search_frame = customtkinter.CTkFrame(self.__left_frame)
-        self.__search_entry = customtkinter.CTkEntry(
-            self.__search_frame, placeholder_text="search"
-        )
+        self.__search_entry = customtkinter.CTkEntry(self.__search_frame, placeholder_text="search")
         self.__search_entry.pack(fill="x", side="left", expand=1)
         self.__search_frame.pack(fill="x", pady=5)
         self.__scrollbar = customtkinter.CTkScrollbar(self.__left_frame)
@@ -70,12 +68,8 @@ class MusicPlayer(customtkinter.CTk):
 
         self.__right_frame = customtkinter.CTkFrame(self.__container)
         self.__titre_text = StringVar()
-        self.__titre = customtkinter.CTkLabel(
-            self.__right_frame, textvariable=self.__titre_text
-        ).pack(pady=50)
-        self.__image_music = customtkinter.CTkLabel(
-            self.__right_frame, text="", image=self.__album_image
-        )
+        self.__titre = customtkinter.CTkLabel(self.__right_frame, textvariable=self.__titre_text).pack(pady=50)
+        self.__image_music = customtkinter.CTkLabel(self.__right_frame, text="", image=self.__album_image)
         self.__image_music.pack()
 
         self.__right_frame_bottom = customtkinter.CTkFrame(self.__right_frame)
@@ -107,9 +101,6 @@ class MusicPlayer(customtkinter.CTk):
             command=self.next,
             image=self.__text_image,
         ).pack(side="left")
-
-        # self.__slide_volume = customtkinter.CTkSlider(self.__right_frame_bottom, width=50, command=lambda value: (
-        # lecteur.set_volume(value)), from_=0, to=100) self.__slide_volume.pack(padx=50, side="right")
 
         self.__frame_center_button.pack(anchor="center")
 
