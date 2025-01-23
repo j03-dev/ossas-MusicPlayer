@@ -25,7 +25,7 @@ class State(Enum):
 class Application(ctk.CTk):
     w = 1000
     h = 500
-    player_state = State.Stop
+    status = State.Stop
     theme: str = "white"
     current_music_index: int = 0
     scrolloff: int = 8
