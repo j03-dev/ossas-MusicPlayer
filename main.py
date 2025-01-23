@@ -22,7 +22,7 @@ class State(Enum):
     Pause = 2
 
 
-class MusicPlayer(ctk.CTk):
+class Application(ctk.CTk):
     w = 1000
     h = 500
     player_state = State.Stop
@@ -234,5 +234,5 @@ class MusicPlayer(ctk.CTk):
 
 
 if __name__ == "__main__":
-    app = MusicPlayer()
+    app = Application()
     app.mainloop()
