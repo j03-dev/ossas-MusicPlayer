@@ -1,11 +1,5 @@
-import time
-from os import path, walk
-from osas.osas import Player
-
 import eyed3
-from mutagen.mp3 import MP3
-
-player = Player()
+from os import path, walk
 
 
 def read_config(conf: str = "../.config") -> dict:
@@ -33,31 +27,6 @@ def get_tags(song_path: str) -> tuple:
         artist_name = "unknown"
 
     return titre, album_name, artist_name, img
-
-
-def play(song_path: str) -> float:
-    player.stop()
-    player.play(song_path)
-    audio = MP3(song_path)
-    return audio.info.length
-
-
-def set_position(position: float) -> None:
-    player.seek(int(position * 1000))
-
-
-def get_position() -> tuple[float, str]:
-    position: float = player.get_pos() / 1000
-    position_as_time_format: str = time.strftime(
-        "%M:%S",
-        time.gmtime(position),
-    )
-    return position, position_as_time_format
-
-
-def pause() -> bool:
-    player.pause()
-    return player.is_paused()
 
 
 def find_audio_file(search_path: str) -> dict:
