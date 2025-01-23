@@ -44,6 +44,7 @@ A simple music player built with Python and Rust.
 ## Run the Player
 
 ```bash
+cd src
 python main.py
 ```
 
