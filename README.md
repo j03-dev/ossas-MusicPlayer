@@ -1,33 +1,50 @@
-# ossas-MusicPlayer
+# OSAS Player
 
-![screenshot](image.png)
+![Screenshot](image.png)
 
-## how to install
+A simple music player built with Python and Rust.
+
+---
+
+## Installation
+
+1. Clone the repo:
+   ```bash
+   git clone https://github.com/j03-dev/osas-player.git
+   cd osas-player
+   ```
+
+2. Install Python dependencies:
+   ```bash
+   python -m pip install -r requirements.txt
+   ```
+
+---
+
+## Configuration
+
+1. Open `.config` and set your music directory:
+   ```
+   path = /path/to/your/music
+   ```
+
+---
+
+## Build Rust Library
+
+1. Install [Rust](https://www.rust-lang.org/tools/install) if you don’t have it.
+2. Build the library:
+   ```bash
+   cd osas
+   maturin develop
+   ```
+
+---
+
+## Run the Player
 
 ```bash
-git clone github.com/j03-dev/osas-player
-cd osas-player
-python -m pip install -r requirements.txt
-```
-
-## config
-
-_open_ **.config** and change<br>
-
-```
-path = your music directory
-```
-
-## To run this project
-you need to build osas lib , for that u need rust installed
-before , i use pygame mixer to play music, so i decide to use **rodio** lib from **rust** and use **py03**
-to create lib from rust -> python
-
-```bash
-cd osas
-maturin develop
-```
-Then you can run the application
-```
 python main.py
 ```
+
+
