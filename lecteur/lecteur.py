@@ -1,13 +1,11 @@
 import time
 from os import path, walk
+from osas.osas import Player
 
 import eyed3
-import pygame
 from mutagen.mp3 import MP3
 
-pygame.mixer.init()
-
-PLAY: bool = True
+player = Player()
 
 
 def read_config(conf: str = "../.config") -> dict:
@@ -29,7 +27,7 @@ def get_tags(song_path: str) -> tuple:
         album_image = audio_file.tag.images
         for image in album_image:
             img = image.image_data
-    except Exception as _:
+    except Exception:
         titre = song_path.split("/")[-1].split(".")[0]
         album_name = "unknown"
         artist_name = "unknown"
@@ -38,32 +36,28 @@ def get_tags(song_path: str) -> tuple:
 
 
 def play(song_path: str) -> float:
-    pygame.mixer.music.load(song_path)
-    pygame.mixer.music.play()
+    player.stop()
+    player.play(song_path)
     audio = MP3(song_path)
     return audio.info.length
 
 
 def set_position(position: float) -> None:
-    pygame.mixer.music.set_pos(position)
+    player.seek(int(position * 1000))
 
 
 def get_position() -> tuple[float, str]:
-    position: float = pygame.mixer.music.get_pos() / 1000
+    position: float = player.get_pos() / 1000
     position_as_time_format: str = time.strftime(
-        "%M:%S", time.gmtime(position))
+        "%M:%S",
+        time.gmtime(position),
+    )
     return position, position_as_time_format
 
 
 def pause() -> bool:
-    global PLAY
-    if PLAY:
-        PLAY = False
-        pygame.mixer.music.pause()
-    else:
-        PLAY = True
-        pygame.mixer.music.unpause()
-    return PLAY
+    player.pause()
+    return player.is_paused()
 
 
 def find_audio_file(search_path: str) -> dict:
