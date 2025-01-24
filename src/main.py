@@ -1,4 +1,3 @@
-import time
 import tkinter as tk
 import customtkinter as ctk
 
@@ -147,12 +146,14 @@ class Application(ctk.CTk):
 
         self.play_time()
 
-    def music_now(self, index) -> str:
+    def get_current_music_path(self, index) -> str:
         key = self.playlist.get(index)
         return self.music_library[key]
 
     def update_title_and_cover(self, index) -> None:
-        titre, _, artist, image = utils.get_tags(self.music_now(index))
+        titre, _, artist, image = utils.get_tags(
+            self.get_current_music_path(index),
+        )
 
         if image is not None:
             with open(".tmp.jpg", "wb") as file:
@@ -175,20 +176,19 @@ class Application(ctk.CTk):
         if self.status is State.Play:
             position = self.player.get_pos() / 1000
             self.scale.set(position)
-            time_left = time.strftime("%M:%S", time.gmtime(position))
-            if time_left == "59:59":
+            if round(position) >= round(self.scale._to):
                 self.next()
         self.after(1000, self.play_time)
 
     def play(self, index: int | str = "active") -> None:
         self.status = State.Play
         total_len_music = len(self.playlist.get(0, "end"))
-        if index == total_len_music:
-            index = 0
-        song = self.music_now(index)
+        if isinstance(index, int):
+            index %= total_len_music
+        music_path = self.get_current_music_path(index)
         self.player.stop()
-        self.player.play(song)
-        self.scale._to = MP3(song).info.length
+        self.player.play(music_path)
+        self.scale._to = MP3(music_path).info.length
         self.scale.set(0)
         self.play_btn.config(image=self.pause_img, command=self.pause)
         self.playlist.selection_clear(0, "end")
