@@ -172,7 +172,6 @@ class Application(ctk.CTk):
         self.player.seek(int(position * 1000))
 
     def play_time(self) -> None:
-        # update scale postion
         if self.status is State.Play:
             position = self.player.get_pos() / 1000
             self.scale.set(position)
@@ -182,23 +181,29 @@ class Application(ctk.CTk):
 
     def play(self, index: int | str = "active") -> None:
         self.status = State.Play
-        total_len_music = len(self.playlist.get(0, "end"))
+        playlist_length = len(self.playlist.get(0, "end"))
+
         if isinstance(index, int):
-            index %= total_len_music
+            index %= playlist_length
+
         music_path = self.get_current_music_path(index)
+
         self.player.stop()
         self.player.play(music_path)
+
         self.scale._to = MP3(music_path).info.length
         self.scale.set(0)
+
         self.play_btn.config(image=self.pause_img, command=self.pause)
+
         self.playlist.selection_clear(0, "end")
         self.playlist.activate(index)
         self.playlist.selection_set(index, last=None)
+
         self.current_music_index: int = self.playlist.curselection()[0]
-        self.playlist.yview(
-            "moveto",
-            (self.current_music_index - self.scrolloff) / total_len_music,
-        )  # update yview
+        yview = (self.current_music_index - self.scrolloff) / playlist_length
+        self.playlist.yview("moveto", yview)
+
         self.update_title_and_cover(self.current_music_index)
 
     def pause(self) -> None:
