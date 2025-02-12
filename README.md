@@ -10,7 +10,7 @@ A simple music player built with Python and Rust.
 
 1. Clone the repo:
    ```bash
-   git clone https://github.com/j03-dev/osas-player.git
+   git clone --recurse-submodules https://github.com/j03-dev/osas-player.git
    cd osas-player
    ```
 
